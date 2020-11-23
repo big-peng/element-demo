@@ -29,7 +29,7 @@
               <el-menu-item index="2-4-3">选项3</el-menu-item>
             </el-submenu>
           </el-submenu> -->
-          <div>
+          <div style="border: 0">
           <el-button @click="dialogFormVisible=true;isLogin=true" :plain="true" style="border: 0">登录</el-button>
           <el-dialog :show-close="false" width="400px" :visible.sync="dialogFormVisible" style="padding: 0px">
                 <el-form ref="loginForm" :model="form" :rules="rules" label-width="70px" class="login-box">
@@ -51,8 +51,8 @@
                     </el-col>
                     <el-col :span="12">
                     <el-image
-                    style="width: 40px"
-                    :src="require('@/assets/logo.png')"></el-image>
+                    style="width: 150px"
+                    :src="imgUrl + captcha" @click="updateCaptcha()"></el-image>
                     </el-col>
                 </el-form-item>
                 <el-form-item v-if="isLogin" label-width="100px" >
@@ -91,6 +91,8 @@
 export default {
   data() {
     return {
+        imgUrl: "http://39.100.225.63:8999/test/image/captcha?content=",
+        captcha: "",
       activeIndex: "1",
       activeIndex2: "1",
       dialogFormVisible: false,
@@ -102,15 +104,48 @@ export default {
         formLabelWidth: '120px'
     };
   },
+  created(){
+      this.updateCaptcha();
+  },
   methods: {
     handleSelect(key, keyPath) {
       console.log(key, keyPath);
     },
+    updateCaptcha() {
+        this.captcha = this.createCode(6);
+    },
+    createCode(length) {
+        var code = "";
+        var codeLength = parseInt(length); //验证码的长度
+        var checkCode = document.getElementById("checkCode");
+        ////所有候选组成验证码的字符，当然也可以用中文的
+        var codeChars = new Array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+        'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z',
+        'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'); 
+        //循环组成验证码的字符串
+        for (var i = 0; i < codeLength; i++)
+        {
+            //获取随机验证码下标
+            var charNum = Math.floor(Math.random() * 62);
+            //组合成指定字符验证码
+            code += codeChars[charNum];
+        }
+        if (checkCode)
+        {
+            //为验证码区域添加样式名
+            checkCode.className = "code";
+            //将生成验证码赋值到显示区
+            checkCode.innerHTML = code;
+        }
+        console.log(code);
+        return code;
+    }
   }
 };
 </script>
 
 <style>
+:focus { outline:0; }
 .el-row {
     height: 60px;
     &:last-child {
