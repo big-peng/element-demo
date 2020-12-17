@@ -32,9 +32,9 @@
           <div style="border: 0">
           <el-button @click="dialogFormVisible=true;isLogin=true" :plain="true" style="border: 0">登录</el-button>
           <el-dialog :show-close="false" width="400px" :visible.sync="dialogFormVisible" style="padding: 0px">
-                <el-form ref="loginForm" :model="form" :rules="rules" label-width="70px" class="login-box">
+                <el-form ref="loginForm" :model="form" label-width="70px" class="login-box">
                 
-                <h3 v-if="isLogin" class="login-title">欢迎登录</h3>
+                <h3 v-if="isLogin" class="login-title">欢迎登陆</h3>
                 <h3 v-else class="login-title">欢迎注册</h3>
                 <el-form-item label="账号" prop="username">
                     <el-input type="text" placeholder="请输入账号" v-model="form.username"/>
@@ -56,18 +56,18 @@
                     </el-col>
                 </el-form-item>
                 <el-form-item v-if="isLogin" label-width="100px" >
-                    <el-button type="primary" v-on:click="onSubmit('loginForm')">登录</el-button>
+                    <el-button type="primary" @click="loginForm">登录</el-button>
                     
                     <el-button @click="isLogin=false" :plain="true" style="border: 0">注册</el-button>
                 </el-form-item>
                 <el-form-item v-else label-width="100px">
-                    <el-button type="primary" v-on:click="onSubmit('loginForm')">注册</el-button>
+                    <el-button type="primary" v-on:click="onSubmit('registerForm')">注册</el-button>
                     
                     <el-button @click="isLogin=true" :plain="true" style="border: 0">登录</el-button>
                 </el-form-item>
                 </el-form>
 
-                <el-dialog
+                <!-- <el-dialog
                 title="温馨提示"
                 :visible.sync="dialogVisible"
                 width="30%"
@@ -76,7 +76,7 @@
                 <span slot="footer" class="dialog-footer">
                     <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
                 </span>
-                </el-dialog>
+                </el-dialog> -->
             </el-dialog>
             <el-button type="primary" @click="dialogFormVisible=true;isLogin=false">注册</el-button>
             </div>
@@ -88,17 +88,18 @@
 </template>
 
 <script>
+import https from '../../https.js'
 export default {
   data() {
     return {
-        imgUrl: "http://39.100.225.63:8999/test/image/captcha?content=",
+        imgUrl: "http://localhost:8999/test/image/captcha?content=",
         captcha: "",
       activeIndex: "1",
       activeIndex2: "1",
       dialogFormVisible: false,
       isLogin: false,
       form: {
-          name: '',
+          username: '',
           region: ''
         },
         formLabelWidth: '120px'
@@ -114,6 +115,23 @@ export default {
     updateCaptcha() {
         this.captcha = this.createCode(6);
     },
+    loginForm(){
+        console.log(this.form.username)
+        let params = {'username': 'admin', 'password': '123456'}
+        https.fetchGet('/api/auth/login?username=admin&password=123456').then((data) => {
+          console.log(data.data.data.token)
+                    console.log(data.data.data.token);
+                    sessionStorage.setItem('token', data.data.data.token)
+                    this.$store.commit("setBankInf", data.data.data.token);
+                    //this.$store.commit("setUserInfo", data.data.token);
+                    // console.log("this.base.tokenthis.base.token",this.base.token)
+                    //this.indexPost2(this.rres)
+                }).catch(err=>{
+                        console.log(err)
+                    }
+                )
+    },
+
     createCode(length) {
         var code = "";
         var codeLength = parseInt(length); //验证码的长度

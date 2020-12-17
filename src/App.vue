@@ -35,6 +35,7 @@ export default {
   text-align: center;
   line-height: 60px;
   padding: 0px;
+  border-radius: 1px;
   border-bottom: solid 1px #e6e6e6;
   padding-bottom: 60px;
 }
